@@ -1,0 +1,42 @@
+[
+  {
+    "sport": "Cricket",
+    "authority": "BCCI / National Cricket Academy (NCA)",
+    "certificates": ["Level 1 Coach Certificate", "Level 2 Coach Certificate", "Level 3 Coach Certificate"]
+  },
+  {
+    "sport": "Football",
+    "authority": "All India Football Federation (AIFF)",
+    "certificates": ["D License", "C License", "B License", "A License", "Pro License"]
+  },
+  {
+    "sport": "Athletics",
+    "authority": "Sports Authority of India (SAI), AFI",
+    "certificates": ["SAI Diploma in Coaching", "AFI Level 1", "AFI Level 2", "AFI Level 3"]
+  },
+  {
+    "sport": "Badminton",
+    "authority": "Badminton Association of India (BAI), SAI",
+    "certificates": ["BAI Shuttle Time Coach", "SAI Certificate"]
+  },
+  {
+    "sport": "Basketball",
+    "authority": "Basketball Federation of India (BFI)",
+    "certificates": ["Level 1 Coaching Certificate", "Level 2 Coaching Certificate"]
+  },
+  {
+    "sport": "Tennis",
+    "authority": "All India Tennis Association (AITA), SAI",
+    "certificates": ["AITA Coaches Education Program", "SAI Certificate"]
+  },
+  {
+    "sport": "Swimming",
+    "authority": "Swimming Federation of India (SFI), SAI",
+    "certificates": ["Level 1 Coaching Certificate", "Level 2 Coaching Certificate", "Level 3 Coaching Certificate"]
+  },
+  {
+    "sport": "General",
+    "authority": "Sports Authority of India (SAI), ICF",
+    "certificates": ["SAI Coaching Diploma", "ICF ACC", "ICF PCC"]
+  }
+]

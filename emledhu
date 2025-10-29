@@ -1,0 +1,97 @@
+///////////Controllers/authentication/coach/
+const Coach = require("../../models/authentication/coach");
+const bcrypt = require("bcryptjs");
+const uploadToCloudinary = require("../../utils/uploadToCloudinary");
+
+exports.coachSignup = async (req, res) => {
+  try {
+    const { name, email, password, sport, certificateName } = req.body;
+    const file = req.file;
+
+    if (!file) return res.status(400).json({ message: "Certificate file is required" });
+
+    const existingCoach = await Coach.findOne({ email });
+    if (existingCoach) return res.status(400).json({ message: "Coach already exists" });
+
+    const hashed = await bcrypt.hash(password, 10);
+
+    // Upload certificate to Cloudinary
+    const certificateUrl = await uploadToCloudinary(file.path);
+
+    // Create coach (unverified)
+    const newCoach = await Coach.create({
+      name,
+      email,
+      password: hashed,
+      sport,
+      certificateName,
+      certificateUrl,
+      isVerified: false, // ❗ not verified yet
+    });
+
+    res.status(201).json({
+      message: "Signup successful! Awaiting admin verification.",
+      coach: newCoach,
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Signup failed", error: err.message });
+  }
+};
+
+
+////////////middlewares/authentication/coach.js
+const jwt = require("jsonwebtoken");
+const Coach = require("../../models/authentication/coach");
+
+// Middleware to verify token
+const protectCoach = async (req, res, next) => {
+  let token;
+
+  if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    try {
+      token = req.headers.authorization.split(" ")[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.coach = await Coach.findById(decoded.id).select("-password");
+      next();
+    } catch (error) {
+      return res.status(401).json({ message: "Not authorized, token failed" });
+    }
+  } else {
+    return res.status(401).json({ message: "No token provided" });
+  }
+};
+
+module.exports = { protectCoach };
+
+
+////////////models/authentication/coach.js
+const mongoose = require("mongoose");
+
+const coachSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  sport: { type: String, required: true },
+  certificateName: { type: String, required: true },
+  certificateUrl: { type: String, required: true },
+  isVerified: { type: Boolean, default: false },
+  verifiedCertificateUrl: { type: String },
+  verifiedAuthority: { type: String },
+});
+
+module.exports = mongoose.model("Coach", coachSchema);
+
+
+////////////////////routes/authentication/coach.js
+const express = require("express");
+const router = express.Router();
+const multer = require("multer");
+const { coachSignup } = require("../../controllers/authentication/coach");
+
+// ✅ Multer setup — to handle form-data uploads
+const upload = multer({ dest: "uploads/" });
+
+// ✅ Use upload.single("certificate") here
+router.post("/signup", upload.single("certificate"), coachSignup);
+
+module.exports = router;

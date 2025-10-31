@@ -3,32 +3,25 @@ const router = express.Router();
 const {
   registerAthlete,
   loginAthlete,
-  getAthlete,
-  updateAthlete,
-  deleteAthlete
+  getAthleteProfile,
+  updateAthleteProfile,
+  deleteAccount,
+  changePassword,
+  forgotPassword,
+  resetPassword
 } = require('../../controllers/authentication/athlete');
 const { protect, requireAthlete } = require('../../middlewares/authentication/athlete');
 
-// @desc    Athlete authentication routes
-// @route   /api/athlete/auth
-
-// 🟢 PUBLIC ROUTES
-
-// Register athlete
+// Public routes
 router.post('/register', registerAthlete);
-
-// Login athlete
 router.post('/login', loginAthlete);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:resetToken', resetPassword);
 
-// 🟢 PROTECTED ROUTES (require authentication)
-
-// Get athlete profile
-router.get('/profile', protect, requireAthlete, getAthlete);
-
-// Update athlete profile
-router.put('/profile', protect, requireAthlete, updateAthlete);
-
-// Delete athlete account
-router.delete('/profile', protect, requireAthlete, deleteAthlete);
+// Protected routes  
+router.get('/profile', protect, requireAthlete, getAthleteProfile);
+router.put('/profile', protect, requireAthlete, updateAthleteProfile);
+router.put('/change-password', protect, requireAthlete, changePassword);
+router.delete('/profile', protect, requireAthlete, deleteAccount);
 
 module.exports = router;

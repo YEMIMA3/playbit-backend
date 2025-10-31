@@ -460,10 +460,10 @@ module.exports = {
   loginAthlete,
   getAthleteProfile,
   updateAthleteProfile,
+  deleteAccount,            
   changePassword,
   forgotPassword,
   resetPassword,
   verifyEmail,
-  resendVerificationEmail,
-  deleteAccount
+  resendVerificationEmail
 };

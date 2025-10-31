@@ -3,59 +3,32 @@ const router = express.Router();
 const {
   registerAthlete,
   loginAthlete,
-  getAthleteProfile,
-  updateAthleteProfile,
-  changePassword,
-  forgotPassword,
-  resetPassword,
-  verifyEmail,
-  resendVerificationEmail,
-  deleteAccount
+  getAthlete,
+  updateAthlete,
+  deleteAthlete
 } = require('../../controllers/authentication/athlete');
-const { protect, requireAthlete, rateLimit } = require('../../middlewares/authentication/athlete');
+const { protect, requireAthlete } = require('../../middlewares/authentication/athlete');
 
 // @desc    Athlete authentication routes
-// @route   /api/auth/athlete
+// @route   /api/athlete/auth
 
 // 🟢 PUBLIC ROUTES
-// Health check
-router.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'Athlete authentication routes are working!',
-    timestamp: new Date().toISOString()
-  });
-});
 
-// Register new athlete (with rate limiting)
-router.post('/register', rateLimit(15 * 60 * 1000, 5), registerAthlete);
+// Register athlete
+router.post('/register', registerAthlete);
 
-// Login athlete (with rate limiting)
-router.post('/login', rateLimit(15 * 60 * 1000, 10), loginAthlete);
+// Login athlete
+router.post('/login', loginAthlete);
 
-// Forgot password (with rate limiting)
-router.post('/forgot-password', rateLimit(15 * 60 * 1000, 3), forgotPassword);
+// 🟢 PROTECTED ROUTES (require authentication)
 
-// Reset password with token
-router.post('/reset-password/:resetToken', resetPassword);
-
-// Verify email
-router.get('/verify-email/:verificationToken', verifyEmail);
-
-// Resend verification email (with rate limiting)
-router.post('/resend-verification', rateLimit(15 * 60 * 1000, 3), resendVerificationEmail);
-
-// 🟢 PROTECTED ROUTES (require athlete authentication)
 // Get athlete profile
-router.get('/profile', protect, requireAthlete, getAthleteProfile);
+router.get('/profile', protect, requireAthlete, getAthlete);
 
 // Update athlete profile
-router.put('/profile', protect, requireAthlete, updateAthleteProfile);
-
-// Change password
-router.put('/change-password', protect, requireAthlete, changePassword);
+router.put('/profile', protect, requireAthlete, updateAthlete);
 
 // Delete athlete account
-router.delete('/delete-account', protect, requireAthlete, deleteAccount);
+router.delete('/profile', protect, requireAthlete, deleteAthlete);
 
 module.exports = router;

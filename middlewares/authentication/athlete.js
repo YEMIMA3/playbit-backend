@@ -1,35 +1,32 @@
 const jwt = require('jsonwebtoken');
 const Athlete = require('../../models/authentication/athlete');
 
-// Protect routes - verify JWT token for athletes only
+// Protect routes - verify JWT token
 const protect = async (req, res, next) => {
   try {
     let token;
 
-    // Check for token in header
+    console.log('🔐 Auth headers:', req.headers.authorization);
+
     if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
       token = req.headers.authorization.split(' ')[1];
-    }
-
-    // Check for token in cookies (alternative method)
-    else if (req.cookies && req.cookies.athlete_token) {
-      token = req.cookies.athlete_token;
     }
 
     if (!token) {
       return res.status(401).json({
         success: false,
-        message: 'Not authorized, no token provided'
+        message: 'Not authorized to access this route - No token'
       });
     }
 
     try {
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'athlete_secret_fallback_12345');
+      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret-2024');
+      console.log('✅ Token decoded:', decoded);
       
-      // Find athlete by ID
+      // Get athlete from token
       const athlete = await Athlete.findById(decoded.id).select('-password');
-
+      
       if (!athlete) {
         return res.status(401).json({
           success: false,
@@ -37,134 +34,38 @@ const protect = async (req, res, next) => {
         });
       }
 
-      // Check if account is active
-      if (athlete.status !== 'active') {
-        return res.status(403).json({
-          success: false,
-          message: 'Your athlete account is not active. Please contact support.'
-        });
-      }
-
-      // Attach athlete to request object
-      req.athlete = {
-        id: athlete._id,
-        email: athlete.email,
-        name: athlete.name,
-        sport: athlete.sport,
-        isVerified: athlete.isVerified
-      };
-      
+      req.athlete = athlete;
+      console.log('👤 Athlete set in request:', athlete.email);
       next();
     } catch (error) {
-      console.error('Token verification error:', error);
+      console.error('❌ Token verification error:', error);
       return res.status(401).json({
         success: false,
-        message: 'Not authorized, invalid token'
+        message: 'Not authorized to access this route - Invalid token'
       });
     }
   } catch (error) {
-    console.error('Athlete auth middleware error:', error);
-    res.status(500).json({
+    console.error('❌ Protect middleware error:', error);
+    return res.status(500).json({
       success: false,
       message: 'Server error in authentication'
     });
   }
 };
 
-// Require athlete role (additional check)
+// Require athlete role
 const requireAthlete = (req, res, next) => {
-  if (req.athlete) {
+  if (req.athlete && req.athlete.role === 'athlete') {
     next();
   } else {
     res.status(403).json({
       success: false,
-      message: 'Access denied. Athlete privileges required.'
+      message: 'Athlete role required to access this resource'
     });
   }
-};
-
-// Check if athlete is verified
-const requireVerified = (req, res, next) => {
-  if (req.athlete && req.athlete.isVerified) {
-    next();
-  } else {
-    res.status(403).json({
-      success: false,
-      message: 'Please verify your email address to access this resource.'
-    });
-  }
-};
-
-// Optional auth - doesn't block but adds athlete info if available
-const optionalAuth = async (req, res, next) => {
-  try {
-    let token;
-
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
-      token = req.headers.authorization.split(' ')[1];
-    } else if (req.cookies && req.cookies.athlete_token) {
-      token = req.cookies.athlete_token;
-    }
-
-    if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'athlete_secret_fallback_12345');
-      const athlete = await Athlete.findById(decoded.id).select('-password');
-      
-      if (athlete && athlete.status === 'active') {
-        req.athlete = {
-          id: athlete._id,
-          email: athlete.email,
-          name: athlete.name,
-          sport: athlete.sport,
-          isVerified: athlete.isVerified
-        };
-      }
-    }
-    
-    next();
-  } catch (error) {
-    // Continue without athlete info if token is invalid
-    next();
-  }
-};
-
-// Rate limiting for athlete endpoints (simple version)
-const rateLimit = (windowMs = 15 * 60 * 1000, maxRequests = 100) => {
-  const requests = new Map();
-
-  return (req, res, next) => {
-    const ip = req.ip || req.connection.remoteAddress;
-    const now = Date.now();
-    const windowStart = now - windowMs;
-
-    // Clean up old entries
-    for (const [key, timestamp] of requests.entries()) {
-      if (timestamp < windowStart) {
-        requests.delete(key);
-      }
-    }
-
-    // Check current requests
-    const currentRequests = Array.from(requests.values()).filter(time => time > windowStart).length;
-
-    if (currentRequests >= maxRequests) {
-      return res.status(429).json({
-        success: false,
-        message: 'Too many requests. Please try again later.'
-      });
-    }
-
-    // Add current request
-    requests.set(ip, now);
-
-    next();
-  };
 };
 
 module.exports = {
   protect,
-  requireAthlete,
-  requireVerified,
-  optionalAuth,
-  rateLimit
+  requireAthlete
 };

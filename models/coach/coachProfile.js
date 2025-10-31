@@ -1,27 +1,63 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const CoachProfileSchema = new mongoose.Schema(
-  {
-    coachId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "coachcredentials",
-      required: true,
-      unique: true,
-    },
-    name: { type: String },
-    email: { type: String },
-    phone: { type: String },
-    location: { type: String },
-    bio: { type: String },
-    sports: [{ type: String }],
-    certifications: [{ type: String }],
-    hourlyRate: { type: String },
-    experience: { type: String },
-    availability: { type: String },
-    achievements: [{ type: String }],
-    profileImage: { type: String }
+const coachProfileSchema = new mongoose.Schema({
+  coachId: {  // Change from 'coach' to 'coachId'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'coachcredentials',
+    required: true,
+    unique: true
   },
-  { timestamps: true }
-);
+  name: {
+    type: String,
+    trim: true
+  },
+  email: {
+    type: String,
+    trim: true,
+    lowercase: true
+  },
+  phone: {
+    type: String,
+    trim: true
+  },
+  location: {
+    type: String,
+    trim: true
+  },
+  sports: [{
+    type: String,
+    trim: true
+  }],
+  experience: {
+    type: String,
+    trim: true
+  },
+  bio: {
+    type: String,
+    trim: true
+  },
+  certifications: [{
+    type: String,
+    trim: true
+  }],
+  hourlyRate: {
+    type: String,
+    trim: true
+  },
+  availability: {
+    type: String,
+    trim: true
+  },
+  achievements: [{
+    type: String,
+    trim: true
+  }],
+  profileImage: {
+    type: String,
+    trim: true
+  }
+}, {
+  timestamps: true
+});
 
-module.exports = mongoose.model("coachprofile", CoachProfileSchema);
+module.exports = mongoose.model('coachprofile', coachProfileSchema);

@@ -4,11 +4,18 @@ const router = express.Router();
 const {
   getCoachProfile,
   updateCoachProfile,
-} = require("../../controllers/coach/coachProfile.js");
+} = require("../../controllers/coach/coachProfile");
 
-const { protectCoach } = require("../../middlewares/authentication/coach.js");
+const { protectCoach } = require("../../middlewares/authentication/coach");
 
-// 🟢 Get coach profile (auto-creates with signup data)
+// Debug middleware
+router.use((req, res, next) => {
+  console.log('🔐 Coach Profile Route - Headers:', req.headers);
+  console.log('🔐 Coach Profile Route - Coach ID:', req.coach?.id);
+  next();
+});
+
+// 🟢 Get coach profile (auto-creates)
 router.get("/", protectCoach, getCoachProfile);
 
 // 🔵 Update coach profile

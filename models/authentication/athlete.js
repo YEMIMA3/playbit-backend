@@ -26,17 +26,20 @@ const athleteSchema = new mongoose.Schema({
     required: [true, 'Sport is required'],
     trim: true
   },
+  role: {
+    type: String,
+    default: 'athlete',
+    enum: ['athlete', 'admin', 'coach']
+  },
   experience: {
     type: String,
     required: [true, 'Experience level is required'],
-    enum: ['0-1', '1-3', '3-5', '5-10', '10+']
+    enum: ['0-1', '1-3', '3-5', '5-10', '10+'],
+    default: '0-1'
   },
-  achievements: {
-    type: String,
-    trim: true,
-    default: '',
-    maxlength: [1000, 'Achievements cannot exceed 1000 characters']
-  },
+  achievements: [{
+    type: String
+  }],
   isCertified: {
     type: Boolean,
     default: false
@@ -52,6 +55,25 @@ const athleteSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false
+  },
+  // Add reset password fields
+  resetPasswordToken: String,
+  resetPasswordExpire: Date,
+  // Additional fields for better user management
+  phone: {
+    type: String,
+    trim: true
+  },
+  location: {
+    type: String,
+    trim: true
+  },
+  dateOfBirth: {
+    type: Date
+  },
+  profileImage: {
+    type: String,
+    default: ''
   }
 }, {
   timestamps: true
@@ -83,5 +105,10 @@ athleteSchema.methods.toJSON = function() {
   delete athlete.password;
   return athlete;
 };
+
+// Index for better query performance
+athleteSchema.index({ email: 1 });
+athleteSchema.index({ status: 1 });
+athleteSchema.index({ resetPasswordExpire: 1 }, { expireAfterSeconds: 0 }); // Auto-expire tokens
 
 module.exports = mongoose.model('athletecredentials', athleteSchema);

@@ -38,6 +38,8 @@ app.use("/api/admin", adminRoutes);
 app.use('/api/admin/tournaments', require('./routes/admin/tournaments'));
 app.use('/api/coach/tournaments', require('./routes/coach/tournaments'));
 app.use('/api/athlete/tournaments', require('./routes/athlete/tournaments'));
+app.use('/api/admin/coaches', require('./routes/admin/coaches'));
+app.use('/api/admin/athletes', require('./routes/admin/athlete')); // Add this line
 
 
 

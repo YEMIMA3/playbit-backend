@@ -8,7 +8,9 @@ const {
   deleteAccount,
   changePassword,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  verifyEmail,
+  resendVerificationEmail
 } = require('../../controllers/authentication/athlete');
 const { protect, requireAthlete } = require('../../middlewares/authentication/athlete');
 
@@ -17,6 +19,8 @@ router.post('/register', registerAthlete);
 router.post('/login', loginAthlete);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:resetToken', resetPassword);
+router.get('/verify-email/:verificationToken', verifyEmail);
+router.post('/resend-verification', resendVerificationEmail);
 
 // Protected routes  
 router.get('/profile', protect, requireAthlete, getAthleteProfile);

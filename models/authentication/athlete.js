@@ -56,7 +56,10 @@ const athleteSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  // Add reset password fields
+  // Email verification fields
+  emailVerificationToken: String,
+  emailVerificationExpire: Date,
+  // Reset password fields
   resetPasswordToken: String,
   resetPasswordExpire: Date,
   // Additional fields for better user management
@@ -103,12 +106,17 @@ athleteSchema.methods.matchPassword = async function(enteredPassword) {
 athleteSchema.methods.toJSON = function() {
   const athlete = this.toObject();
   delete athlete.password;
+  delete athlete.resetPasswordToken;
+  delete athlete.resetPasswordExpire;
+  delete athlete.emailVerificationToken;
+  delete athlete.emailVerificationExpire;
   return athlete;
 };
 
 // Index for better query performance
 athleteSchema.index({ email: 1 });
 athleteSchema.index({ status: 1 });
-athleteSchema.index({ resetPasswordExpire: 1 }, { expireAfterSeconds: 0 }); // Auto-expire tokens
+athleteSchema.index({ resetPasswordExpire: 1 }, { expireAfterSeconds: 0 });
+athleteSchema.index({ emailVerificationExpire: 1 }, { expireAfterSeconds: 0 });
 
 module.exports = mongoose.model('athletecredentials', athleteSchema);

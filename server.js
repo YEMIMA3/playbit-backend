@@ -35,6 +35,9 @@ app.use("/api/auth/athlete", athleteAuthRoutes); // Fixed path
 app.use('/api/coach/profile', coachProfileRoutes);
 app.use('/api/athlete/profile', athleteProfileRoutes);
 app.use("/api/admin", adminRoutes);
+app.use('/api/admin/tournaments', require('./routes/admin/tournaments'));
+app.use('/api/coach/tournaments', require('./routes/coach/tournaments'));
+app.use('/api/athlete/tournaments', require('./routes/athlete/tournaments'));
 
 
 

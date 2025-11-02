@@ -116,7 +116,5 @@ athleteSchema.methods.toJSON = function() {
 // Index for better query performance
 athleteSchema.index({ email: 1 });
 athleteSchema.index({ status: 1 });
-athleteSchema.index({ resetPasswordExpire: 1 }, { expireAfterSeconds: 0 });
-athleteSchema.index({ emailVerificationExpire: 1 }, { expireAfterSeconds: 0 });
 
-module.exports = mongoose.model('athletecredentials', athleteSchema);
+module.exports = mongoose.model('Athlete', athleteSchema, 'athletecredentials');

@@ -1,31 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const {
-  registerAthlete,
-  loginAthlete,
-  getAthleteProfile,
-  updateAthleteProfile,
-  deleteAccount,
-  changePassword,
-  forgotPassword,
-  resetPassword,
-  verifyEmail,
-  resendVerificationEmail
-} = require('../../controllers/authentication/athlete');
-const { protect, requireAthlete } = require('../../middlewares/authentication/athlete');
+const { loginAthlete, signupAthlete } = require('../../controllers/authentication/athlete');
 
-// Public routes
-router.post('/register', registerAthlete);
+// @desc    Athlete authentication routes
+// @route   /api/auth/athlete
+// 🟢 PUBLIC ROUTES
+
+// Athlete login
 router.post('/login', loginAthlete);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password/:resetToken', resetPassword);
-router.get('/verify-email/:verificationToken', verifyEmail);
-router.post('/resend-verification', resendVerificationEmail);
 
-// Protected routes  
-router.get('/profile', protect, requireAthlete, getAthleteProfile);
-router.put('/profile', protect, requireAthlete, updateAthleteProfile);
-router.put('/change-password', protect, requireAthlete, changePassword);
-router.delete('/profile', protect, requireAthlete, deleteAccount);
+// Athlete signup
+router.post('/signup', signupAthlete);
 
 module.exports = router;

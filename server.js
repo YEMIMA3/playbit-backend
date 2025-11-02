@@ -5,9 +5,7 @@ const cors = require("cors"); // Add CORS for frontend communication
 
 // Import routes
 const coachAuthRoutes = require("./routes/authentication/coach");
-const athleteAuthRoutes = require("./routes/authentication/athlete");
 const coachProfileRoutes = require('./routes/coach/coachProfile');
-const athleteProfileRoutes = require('./routes/athlete/athleteprofile');
 const adminRoutes = require("./routes/authentication/admin");
 
 
@@ -31,9 +29,9 @@ mongoose
 
 // Routes
 app.use("/api/auth/coach", coachAuthRoutes); // Fixed path
-app.use("/api/auth/athlete", athleteAuthRoutes); // Fixed path
+app.use('/api/auth/athlete', require('./routes/authentication/athlete'));
+app.use('/api/athlete/profile', require('./routes/athlete/athleteprofile'));
 app.use('/api/coach/profile', coachProfileRoutes);
-app.use('/api/athlete/profile', athleteProfileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/admin/tournaments', require('./routes/admin/tournaments'));
 app.use('/api/coach/tournaments', require('./routes/coach/tournaments'));

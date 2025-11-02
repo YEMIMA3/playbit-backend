@@ -31,7 +31,17 @@ const protect = async (req, res, next) => {
         });
       }
 
+      // Set both req.athlete AND req.user for compatibility
       req.athlete = athlete;
+      req.user = {
+        id: athlete._id.toString(),
+        _id: athlete._id,
+        name: athlete.name,
+        email: athlete.email,
+        role: athlete.role
+      };
+
+      console.log('✅ Authentication successful for:', athlete.email);
       next();
     } catch (error) {
       console.error('Token verification error:', error);
